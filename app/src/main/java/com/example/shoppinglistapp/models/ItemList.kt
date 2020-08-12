@@ -18,4 +18,8 @@ data class ItemList (var ListName: String) : Parcelable {
     fun removeItem(item: Item) {
         elements.remove(item)
     }
+
+    fun getSize() : Int {
+        return elements.size
+    }
 }

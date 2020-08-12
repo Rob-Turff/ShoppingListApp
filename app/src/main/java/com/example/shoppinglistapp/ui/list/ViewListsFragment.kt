@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.databinding.FragmentViewListsBinding
 import com.example.shoppinglistapp.models.ItemList
-import com.example.shoppinglistapp.ui.list.adapters.ListRecyclerAdapter
+import com.example.shoppinglistapp.ui.list.adapters.ViewListsRecyclerAdapter
 
 class ViewListsFragment : Fragment() {
 
@@ -26,13 +26,11 @@ class ViewListsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_view_lists, container, false)
-
-        Log.i("ViewListsFragment", "Called ViewModelProviders.of!")
         viewModel = ViewModelProviders.of(this).get(ViewListsViewModel::class.java)
 
         val viewManager = LinearLayoutManager(activity)
         val recyclerAdapter =
-            ListRecyclerAdapter(viewModel.listsLiveData.value ?: mutableListOf<ItemList>())
+            ViewListsRecyclerAdapter(viewModel.listsLiveData.value ?: mutableListOf<ItemList>())
 
         binding.viewListsRecyclerView.apply {
             layoutManager = viewManager
@@ -44,7 +42,7 @@ class ViewListsFragment : Fragment() {
             Log.i("ViewListsFragment", "Create list button clicked!")
         }
 
-        viewModel.listsLiveData.observe(this, Observer { newList -> recyclerAdapter.updateData(newList) })
+        viewModel.listsLiveData.observe(viewLifecycleOwner, Observer { newList -> recyclerAdapter.updateData(newList) })
 
         return binding.root
     }

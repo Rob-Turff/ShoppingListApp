@@ -18,5 +18,9 @@
         android:id="@+id/itemListFragment"
         android:name="com.example.shoppinglistapp.ui.list.ItemListFragment"
         android:label="fragment_item_list"
-        tools:layout="@layout/fragment_item_list" />
+        tools:layout="@layout/fragment_item_list" >
+        <argument
+            android:name="itemList"
+            app:argType="com.example.shoppinglistapp.models.ItemList" />
+    </fragment>
 </navigation>
