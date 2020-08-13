@@ -19,6 +19,7 @@ class ItemListViewModel(private val _itemList: ItemList) : ViewModel() {
 
     fun onAddItem(item: String) {
         _itemList.addItem(item)
+        _itemList.elements.sortBy {it.completed}
         _itemListLiveData.value = _itemList
     }
 
