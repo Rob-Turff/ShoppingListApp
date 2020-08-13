@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
+import android.widget.CompoundButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
@@ -17,6 +19,7 @@ import com.example.shoppinglistapp.databinding.FragmentItemListBinding
 import com.example.shoppinglistapp.databinding.FragmentViewListsBinding
 import com.example.shoppinglistapp.models.ItemList
 import com.example.shoppinglistapp.ui.list.adapters.ItemListRecyclerAdapter
+import com.example.shoppinglistapp.ui.list.adapters.RecyclerClickListener
 import com.example.shoppinglistapp.ui.list.adapters.ViewListsRecyclerAdapter
 
 class ItemListFragment : Fragment() {
@@ -37,7 +40,15 @@ class ItemListFragment : Fragment() {
 
         val viewManager = LinearLayoutManager(activity)
         val recyclerAdapter =
-            ItemListRecyclerAdapter(viewModel.itemListLiveData.value!!)
+            ItemListRecyclerAdapter(viewModel.itemListLiveData.value!!, object : RecyclerClickListener {
+                override fun onViewClicked(view: View, position: Int) {
+                    view.findViewById<CheckBox>(R.id.checkBox).toggle()
+                }
+
+                override fun onCheckBoxClicked(checkBox: CheckBox, position: Int) {
+                    viewModel.onCompleteItem(position)
+                }
+            } )
 
         binding.itemListRecyclerView.apply {
             layoutManager = viewManager

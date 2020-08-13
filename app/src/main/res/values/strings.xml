@@ -31,4 +31,5 @@
     <string name="add_list_hint">Create new list</string>
     <string name="create_list_button_desc">Create list button</string>
     <string name="list_icon_desc">list icon</string>
+    <string name="add_item_hint">Add new item</string>
 </resources>
