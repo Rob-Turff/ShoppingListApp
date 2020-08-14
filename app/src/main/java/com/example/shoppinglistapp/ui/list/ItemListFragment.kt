@@ -7,20 +7,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
-import android.widget.CompoundButton
+import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.databinding.FragmentItemListBinding
-import com.example.shoppinglistapp.databinding.FragmentViewListsBinding
-import com.example.shoppinglistapp.models.ItemList
 import com.example.shoppinglistapp.ui.list.adapters.ItemListRecyclerAdapter
-import com.example.shoppinglistapp.ui.list.adapters.RecyclerClickListener
-import com.example.shoppinglistapp.ui.list.adapters.ViewListsRecyclerAdapter
+import com.example.shoppinglistapp.ui.list.adapters.ItemListRecyclerClickListener
+import kotlinx.android.synthetic.main.fragment_view_lists.*
 
 class ItemListFragment : Fragment() {
 
@@ -40,7 +37,7 @@ class ItemListFragment : Fragment() {
 
         val viewManager = LinearLayoutManager(activity)
         val recyclerAdapter =
-            ItemListRecyclerAdapter(viewModel.itemListLiveData.value!!, object : RecyclerClickListener {
+            ItemListRecyclerAdapter(viewModel.itemListLiveData.value!!, object : ItemListRecyclerClickListener {
                 override fun onViewClicked(view: View, position: Int) {
                     view.findViewById<CheckBox>(R.id.checkBox).toggle()
                 }
@@ -57,6 +54,7 @@ class ItemListFragment : Fragment() {
 
         binding.addItemButton.setOnClickListener {
             viewModel.onAddItem(binding.itemListEditText.text.toString())
+            binding.itemListEditText.setText("")
             Log.i("ItemListFragment", "Add item button clicked!")
         }
 

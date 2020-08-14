@@ -39,6 +39,7 @@ class ViewListsFragment : Fragment() {
 
         binding.addListButton.setOnClickListener {
             viewModel.onCreateList(binding.textView.text.toString())
+            binding.textView.setText("")
             Log.i("ViewListsFragment", "Create list button clicked!")
         }
 

@@ -3,9 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
         <variable
-            name="Item"
+            name="item"
             type="com.example.shoppinglistapp.models.Item" />
     </data>
 
@@ -28,14 +27,15 @@
                 android:id="@+id/checkBox"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:checked="@{Item.completed}" />
+                android:checked="@{item.completed}" />
 
-            <TextView
-                android:id="@+id/itemTextView"
+            <EditText
+                android:id="@+id/itemEditTextView"
                 android:layout_gravity="center_horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{Item.itemName}" />
+                android:text="@{item.itemName}"
+                android:background="@android:color/transparent" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </layout>
