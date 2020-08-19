@@ -1,37 +1,36 @@
 package com.example.shoppinglistapp.ui.list
 
+import android.app.Application
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.example.shoppinglistapp.models.Item
-import com.example.shoppinglistapp.models.ItemList
+import com.example.shoppinglistapp.database.models.*
 
-class ItemListViewModel(private val _itemList: ItemList) : ViewModel() {
-    private val _itemListLiveData = MutableLiveData<ItemList>()
-    val itemListLiveData: LiveData<ItemList>
+class ItemListViewModel(private val itemListID: Long, val listDatabase: ItemListDatabaseDAO, val itemDatabase: ItemDatabaseDAO, application: Application) : AndroidViewModel(application) {
+    private val _listInfoLiveData: LiveData<ItemList> = listDatabase.getListInfo(itemListID)
+    val listInfoLiveData : LiveData<ItemList>
+        get() = _listInfoLiveData
+
+    private val _itemListLiveData: LiveData<List<Item>> = listDatabase.getItems(itemListID)
+    val itemListLiveData: LiveData<List<Item>>
         get() = _itemListLiveData
 
     init {
-        Log.i("ItemListViewModel", "Initialised view model with $_itemList")
-        _itemListLiveData.value = _itemList
+        Log.i("ItemListViewModel", "Initialised view model with $listDatabase.")
     }
 
-    fun onAddItem(item: String) {
-        _itemList.addItem(item)
-        _itemList.elements.sortBy {it.completed}
-        _itemListLiveData.value = _itemList
+    fun onAddItem(itemName: String) {
+        itemDatabase.insert(Item(itemName, itemListID))
     }
 
     fun onDeleteItem(item: Item) {
-        _itemList.removeItem(item)
-        _itemListLiveData.value = _itemList
+        itemDatabase.delete(item)
     }
 
-    fun onCompleteItem(postion: Int) {
-        Log.i("ItemListViewModel", "Flipping completed boolean for ${_itemList.elements[postion]}")
-        _itemList.elements[postion].completed = !_itemList.elements[postion].completed
-        _itemList.elements.sortBy {it.completed}
-        _itemListLiveData.value = _itemList
+    fun onCompleteItem(item: Item) {
+        Log.i("ItemListViewModel", "Flipping completed boolean for ${item.itemName}")
+        item.isCompleted = !item.isCompleted
+        //TODO update specific field?
+        itemDatabase.update(item)
     }
 }

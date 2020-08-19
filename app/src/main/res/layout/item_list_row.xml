@@ -5,7 +5,7 @@
     <data>
         <variable
             name="item"
-            type="com.example.shoppinglistapp.models.Item" />
+            type="com.example.shoppinglistapp.database.models.Item" />
     </data>
 
     <androidx.cardview.widget.CardView

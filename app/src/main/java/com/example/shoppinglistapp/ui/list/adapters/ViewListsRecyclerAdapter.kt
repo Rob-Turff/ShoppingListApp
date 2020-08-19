@@ -9,7 +9,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.databinding.ViewListsRowBinding
-import com.example.shoppinglistapp.models.ItemList
+import com.example.shoppinglistapp.database.models.ItemList
 import com.example.shoppinglistapp.ui.list.ViewListsFragmentDirections
 
 class ViewListsRecyclerAdapter(private var itemLists: List<ItemList>) :
@@ -28,7 +28,7 @@ class ViewListsRecyclerAdapter(private var itemLists: List<ItemList>) :
         override fun onClick(v: View?) {
             if (v != null) {
                 Log.i("ViewListsRecyclerView", "Clicked element in view $adapterPosition")
-                v.findNavController().navigate(ViewListsFragmentDirections.actionViewListsFragmentToItemListFragment(itemLists[adapterPosition]))
+                v.findNavController().navigate(ViewListsFragmentDirections.actionViewListsFragmentToItemListFragment(itemLists[adapterPosition].itemListID))
             }
         }
 

@@ -12,10 +12,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.databinding.ItemListRowBinding
-import com.example.shoppinglistapp.models.Item
-import com.example.shoppinglistapp.models.ItemList
+import com.example.shoppinglistapp.database.models.Item
+import com.example.shoppinglistapp.database.models.ItemList
 
-class ItemListRecyclerAdapter(private var itemList: ItemList, private val _listener : ItemListRecyclerClickListener) :
+class ItemListRecyclerAdapter(private var itemList: List<Item>, private val _listener : ItemListRecyclerClickListener) :
     RecyclerView.Adapter<ItemListRecyclerAdapter.ListHolder>() {
 
     inner class ListHolder(private val binding: ItemListRowBinding, private val listener : ItemListRecyclerClickListener) :
@@ -24,13 +24,13 @@ class ItemListRecyclerAdapter(private var itemList: ItemList, private val _liste
             itemView.setOnClickListener(this)
             binding.checkBox.setOnClickListener { v ->
                 Log.i("ItemListRecyclerView", "Clicked checkbox in view at $adapterPosition")
-                listener.onCheckBoxClicked(v as CheckBox, adapterPosition)
+                listener.onCheckBoxClicked(v as CheckBox, binding.item!!)
             }
             binding.itemEditTextView.addTextChangedListener { text: Editable? -> binding.item?.itemName = text.toString() }
         }
 
         fun bind(item: Item) {
-            if (item.completed) {
+            if (item.isCompleted) {
                 binding.itemEditTextView.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
             } else {
                 binding.itemEditTextView.paintFlags = 1
@@ -42,7 +42,7 @@ class ItemListRecyclerAdapter(private var itemList: ItemList, private val _liste
         override fun onClick(v: View?) {
             if (v != null) {
                 Log.i("ItemListRecyclerView", "Clicked view at $adapterPosition")
-                listener.onCheckBoxClicked(binding.checkBox, adapterPosition)
+                listener.onCheckBoxClicked(binding.checkBox, binding.item!!)
             }
         }
     }
@@ -61,13 +61,13 @@ class ItemListRecyclerAdapter(private var itemList: ItemList, private val _liste
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(holder: ListHolder, position: Int) {
-        holder.bind(itemList.elements[position])
+        holder.bind(itemList[position])
     }
 
     // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = itemList.getSize()
+    override fun getItemCount() = itemList.size
 
-    fun updateData(newItemList: ItemList) {
+    fun updateData(newItemList: List<Item>) {
         itemList = newItemList
         notifyDataSetChanged()
     }

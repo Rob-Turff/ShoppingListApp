@@ -4,8 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.shoppinglistapp.models.Item
-import com.example.shoppinglistapp.models.ItemList
+import com.example.shoppinglistapp.database.models.ItemList
 
 class ViewListsViewModel : ViewModel() {
     private val lists = mutableListOf<ItemList>()
@@ -15,8 +14,6 @@ class ViewListsViewModel : ViewModel() {
 
     init {
         Log.i("ViewListsViewModel", "ViewListsViewModel created!")
-        lists.add(ItemList("Shopping List"))
-        lists.add(ItemList("To Do List"))
         _listsLiveData.value = lists
     }
 
