@@ -1,35 +1,58 @@
 package com.example.shoppinglistapp.ui.list
 
+import android.app.Application
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.shoppinglistapp.database.models.ItemList
+import com.example.shoppinglistapp.database.models.ItemListDatabaseDAO
+import kotlinx.coroutines.*
 
-class ViewListsViewModel : ViewModel() {
-    private val lists = mutableListOf<ItemList>()
-    private val _listsLiveData = MutableLiveData<List<ItemList>>()
-    val listsLiveData : LiveData<List<ItemList>>
+class ViewListsViewModel(
+    private val database: ItemListDatabaseDAO,
+    application: Application
+) : AndroidViewModel(application) {
+    private val _listsLiveData = database.getAllLists()
+    val listsLiveData: LiveData<List<ItemList>>
         get() = _listsLiveData
+
+    private var viewModelJob = Job()
+    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
     init {
         Log.i("ViewListsViewModel", "ViewListsViewModel created!")
-        _listsLiveData.value = lists
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        Log.i("ViewListsViewModel", "ViewListsViewModel destroyed!")
     }
 
     fun onCreateList(listName: String) {
         Log.i("ViewListsViewModel", "Created new list called $listName")
-        lists.add(ItemList(listName))
-        _listsLiveData.value = lists
+        uiScope.launch {
+            val newList = ItemList(listName)
+            insert(newList)
+        }
     }
 
-    fun removeList(list: ItemList) {
-        lists.remove(list)
-        _listsLiveData.value = lists
+    fun onDeleteList(list: ItemList) {
+        uiScope.launch {
+            delete(list)
+        }
+    }
+
+    private suspend fun insert(list: ItemList) {
+        withContext(Dispatchers.IO) {
+            database.insert(list)
+        }
+    }
+
+    private suspend fun delete(list: ItemList) {
+        withContext(Dispatchers.IO) {
+            database.deleteList(list)
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
     }
 }

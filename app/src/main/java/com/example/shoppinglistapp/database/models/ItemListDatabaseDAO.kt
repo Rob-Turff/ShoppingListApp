@@ -18,6 +18,9 @@ interface ItemListDatabaseDAO {
     @Query("SELECT * FROM item_list_table WHERE list_id = :id")
     fun getListInfo(id : Long) : LiveData<ItemList>
 
+    @Query("SELECT * FROM item_list_table")
+    fun getAllLists() : LiveData<List<ItemList>>
+
     @Delete
-    fun deleteAll(itemList: ItemList)
+    fun deleteList(itemList: ItemList)
 }

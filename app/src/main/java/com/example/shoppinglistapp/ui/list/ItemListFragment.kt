@@ -42,7 +42,7 @@ class ItemListFragment : Fragment() {
 
         val viewManager = LinearLayoutManager(activity)
         val recyclerAdapter =
-            ItemListRecyclerAdapter(viewModel.itemListLiveData.value!!, object : ItemListRecyclerClickListener {
+            ItemListRecyclerAdapter(viewModel.itemListLiveData.value ?: mutableListOf<Item>(), object : ItemListRecyclerClickListener {
                 override fun onViewClicked(view: View, position: Int) {
                     view.findViewById<CheckBox>(R.id.checkBox).toggle()
                 }

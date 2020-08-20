@@ -13,12 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.databinding.FragmentViewListsBinding
 import com.example.shoppinglistapp.database.models.ItemList
+import com.example.shoppinglistapp.database.models.ItemsDatabase
 import com.example.shoppinglistapp.ui.list.adapters.ViewListsRecyclerAdapter
 
 class ViewListsFragment : Fragment() {
 
     private lateinit var viewModel: ViewListsViewModel
-
+    private lateinit var viewModelFactory: ViewListsViewModelFactory
     private lateinit var binding: FragmentViewListsBinding
 
     override fun onCreateView(
@@ -26,7 +27,10 @@ class ViewListsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_view_lists, container, false)
-        viewModel = ViewModelProviders.of(this).get(ViewListsViewModel::class.java)
+        val application = requireNotNull(this.activity).application
+        val listDataSource = ItemsDatabase.getInstance(application).itemListDatabaseDao
+        viewModelFactory = ViewListsViewModelFactory(listDataSource, application)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ViewListsViewModel::class.java)
 
         val viewManager = LinearLayoutManager(activity)
         val recyclerAdapter =
