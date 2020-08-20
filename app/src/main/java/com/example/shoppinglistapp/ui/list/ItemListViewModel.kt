@@ -49,6 +49,13 @@ class ItemListViewModel(
         }
     }
 
+    fun onTextChanged(item: Item, text : String) {
+        uiScope.launch {
+            item.itemName = text
+            update(item)
+        }
+    }
+
     private suspend fun insert(item: Item) {
         withContext(Dispatchers.IO) {
             itemDatabase.insert(item)

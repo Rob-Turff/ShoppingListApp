@@ -26,7 +26,7 @@ class ItemListRecyclerAdapter(private var itemList: List<Item>, private val _lis
                 Log.i("ItemListRecyclerView", "Clicked checkbox in view at $adapterPosition")
                 listener.onCheckBoxClicked(v as CheckBox, binding.item!!)
             }
-            binding.itemEditTextView.addTextChangedListener { text: Editable? -> binding.item?.itemName = text.toString() }
+            binding.itemEditTextView.addTextChangedListener { text: Editable? -> listener.onTextChanged(binding.item!!, text.toString()) }
         }
 
         fun bind(item: Item) {

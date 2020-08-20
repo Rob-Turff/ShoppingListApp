@@ -50,6 +50,10 @@ class ItemListFragment : Fragment() {
                 override fun onCheckBoxClicked(checkBox: CheckBox, item: Item) {
                     viewModel.onCompleteItem(item)
                 }
+
+                override fun onTextChanged(item: Item, text : String) {
+                    viewModel.onTextChanged(item, text)
+                }
             } )
 
         binding.itemListRecyclerView.apply {
