@@ -75,6 +75,11 @@ class ItemListFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        (activity as MainActivity).showGroupMenuButtons(R.id.item_list_group, true)
+        super.onResume()
+    }
+
     companion object {
         @JvmStatic
         fun newInstance() = ItemListFragment()

@@ -15,9 +15,10 @@ import com.example.shoppinglistapp.ui.list.ViewListsFragmentDirections
 class ViewListsRecyclerAdapter(private var itemLists: List<ItemList>) :
     RecyclerView.Adapter<ViewListsRecyclerAdapter.ListHolder>() {
 
-    inner class ListHolder(private val binding: ViewListsRowBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+    inner class ListHolder(private val binding: ViewListsRowBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener , View.OnLongClickListener {
         init {
             itemView.setOnClickListener(this)
+            itemView.setOnLongClickListener(this)
         }
 
         fun bind(itemList: ItemList) {
@@ -30,6 +31,11 @@ class ViewListsRecyclerAdapter(private var itemLists: List<ItemList>) :
                 Log.i("ViewListsRecyclerView", "Clicked element in view $adapterPosition")
                 v.findNavController().navigate(ViewListsFragmentDirections.actionViewListsFragmentToItemListFragment(itemLists[adapterPosition].itemListID))
             }
+        }
+
+        override fun onLongClick(v: View?): Boolean {
+            Log.i("ViewListsRecyclerView", "Long clicked element in view $adapterPosition")
+            return true
         }
 
     }

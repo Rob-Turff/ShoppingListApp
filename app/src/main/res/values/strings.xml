@@ -32,4 +32,9 @@
     <string name="create_list_button_desc">Create list button</string>
     <string name="list_icon_desc">list icon</string>
     <string name="add_item_hint">Add new item</string>
+    <string name="rename_list">Rename List</string>
+    <string name="delete_completed">Delete Completed</string>
+    <string name="delete_selected">Delete Selected</string>
+    <string name="delete_list">Delete List</string>
+    <string name="share_list">Share</string>
 </resources>
