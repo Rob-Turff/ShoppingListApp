@@ -41,18 +41,33 @@ class ItemListViewModel(
         }
     }
 
+    fun onRenameList(name : String) {
+        uiScope.launch {
+            val list = listInfoLiveData.value
+            list?.let {
+                list.listName = name
+                updateList(it) }
+        }
+    }
+
+    fun onDeleteList() {
+        uiScope.launch {
+            deleteList()
+        }
+    }
+
     fun onCompleteItem(item: Item) {
         Log.i("ItemListViewModel", "Flipping completed boolean for ${item.itemName}")
         uiScope.launch {
             item.isCompleted = !item.isCompleted
-            update(item)
+            updateItem(item)
         }
     }
 
-    fun onTextChanged(item: Item, text : String) {
+    fun onItemTextChanged(item: Item, text : String) {
         uiScope.launch {
             item.itemName = text
-            update(item)
+            updateItem(item)
         }
     }
 
@@ -68,15 +83,27 @@ class ItemListViewModel(
         }
     }
 
-    private suspend fun update(item: Item) {
+    private suspend fun updateItem(item: Item) {
         withContext(Dispatchers.IO) {
             itemDatabase.update(item)
+        }
+    }
+
+    private suspend fun updateList(itemList: ItemList) {
+        withContext(Dispatchers.IO) {
+            listDatabase.update(itemList)
         }
     }
 
     private suspend fun delete(item: Item) {
         withContext(Dispatchers.IO) {
             itemDatabase.delete(item)
+        }
+    }
+
+    private suspend fun deleteList() {
+        withContext(Dispatchers.IO) {
+            listDatabase.deleteList(itemListID)
         }
     }
 

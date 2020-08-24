@@ -52,6 +52,11 @@ class ViewListsFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        activity?.setTitle(R.string.app_title)
+    }
+
     companion object {
         @JvmStatic
         fun newInstance() = ViewListsFragment()

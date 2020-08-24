@@ -37,4 +37,9 @@
     <string name="delete_selected">Delete Selected</string>
     <string name="delete_list">Delete List</string>
     <string name="share_list">Share</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_list_check">Are you sure you want to delete this list?</string>
+    <string name="confirm">Confirm</string>
+    <string name="enter_name">Enter Name</string>
+    <string name="app_title">Somekinda List App</string>
 </resources>

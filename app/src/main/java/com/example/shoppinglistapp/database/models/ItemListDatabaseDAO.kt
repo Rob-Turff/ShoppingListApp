@@ -24,6 +24,6 @@ interface ItemListDatabaseDAO {
     @Query("DELETE FROM item_table WHERE item_list_id = :id AND is_completed = 1")
     fun deleteCompleted(id : Long)
 
-    @Delete
-    fun deleteList(itemList: ItemList)
+    @Query("DELETE FROM item_list_table WHERE list_id = :id")
+    fun deleteList(id : Long)
 }

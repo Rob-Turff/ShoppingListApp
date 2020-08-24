@@ -5,11 +5,11 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.TextView
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.database.models.Item
@@ -17,9 +17,12 @@ import com.example.shoppinglistapp.database.models.ItemsDatabase
 import com.example.shoppinglistapp.databinding.FragmentItemListBinding
 import com.example.shoppinglistapp.ui.list.adapters.ItemListRecyclerAdapter
 import com.example.shoppinglistapp.ui.list.adapters.ItemListRecyclerClickListener
-import kotlinx.android.synthetic.main.fragment_view_lists.*
+import com.example.shoppinglistapp.ui.list.dialogboxes.DeleteListDialogFragment
+import com.example.shoppinglistapp.ui.list.dialogboxes.RenameListDialogFragment
 
-class ItemListFragment : Fragment() {
+class ItemListFragment : Fragment(),
+        DeleteListDialogFragment.DeleteListDialogListener,
+        RenameListDialogFragment.RenameListDialogListener {
 
     private lateinit var viewModel: ItemListViewModel
     private lateinit var viewModelFactory: ItemListViewModelFactory
@@ -52,7 +55,7 @@ class ItemListFragment : Fragment() {
                 }
 
                 override fun onTextChanged(item: Item, text : String) {
-                    viewModel.onTextChanged(item, text)
+                    viewModel.onItemTextChanged(item, text)
                 }
             } )
 
@@ -68,11 +71,24 @@ class ItemListFragment : Fragment() {
         }
 
         viewModel.itemListLiveData.observe(viewLifecycleOwner, Observer { newItemList -> recyclerAdapter.updateData(newItemList.sortedBy { it.isCompleted }) })
+        viewModel.listInfoLiveData.observe(viewLifecycleOwner, Observer { newListInfo -> activity?.setTitle(newListInfo.listName) })
 
         binding.lifecycleOwner = this
 
         // Inflate the layout for this fragment
         return binding.root
+    }
+
+    private fun onDeleteListClicked() {
+        val dialogFragment = DeleteListDialogFragment()
+        dialogFragment.setTargetFragment(this, 0)
+        dialogFragment.show(parentFragmentManager, "delete_list_dialog")
+    }
+
+    private fun onRenameListClicked() {
+        val dialogFragment = RenameListDialogFragment()
+        dialogFragment.setTargetFragment(this, 0)
+        dialogFragment.show(parentFragmentManager, "rename_list_dialog")
     }
 
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -83,17 +99,23 @@ class ItemListFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_delete_completed -> viewModel.onDeleteCompleted()
+            R.id.menu_delete_list -> onDeleteListClicked()
+            R.id.menu_rename_list -> onRenameListClicked()
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onResume() {
-        (activity as MainActivity).showGroupMenuButtons(R.id.item_list_group, true)
-        super.onResume()
     }
 
     companion object {
         @JvmStatic
         fun newInstance() = ItemListFragment()
+    }
+
+    override fun onDeleteListDialogPositiveClick(dialog: DialogFragment) {
+        viewModel.onDeleteList()
+        findNavController().navigateUp()
+    }
+
+    override fun onRenameListDialogPositiveClick(dialog: DialogFragment, text: String) {
+        viewModel.onRenameList(text)
     }
 }

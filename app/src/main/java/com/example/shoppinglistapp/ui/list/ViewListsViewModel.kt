@@ -33,9 +33,9 @@ class ViewListsViewModel(
         }
     }
 
-    fun onDeleteList(list: ItemList) {
+    fun onDeleteList(id: Long) {
         uiScope.launch {
-            delete(list)
+            delete(id)
         }
     }
 
@@ -45,9 +45,9 @@ class ViewListsViewModel(
         }
     }
 
-    private suspend fun delete(list: ItemList) {
+    private suspend fun delete(id: Long) {
         withContext(Dispatchers.IO) {
-            database.deleteList(list)
+            database.deleteList(id)
         }
     }
 
