@@ -9,7 +9,7 @@ import kotlinx.coroutines.*
 
 class ItemListViewModel(
     private val itemListID: Long,
-    listDatabase: ItemListDatabaseDAO,
+    private val listDatabase: ItemListDatabaseDAO,
     private val itemDatabase: ItemDatabaseDAO,
     application: Application
 ) : AndroidViewModel(application) {
@@ -56,6 +56,12 @@ class ItemListViewModel(
         }
     }
 
+    fun onDeleteCompleted() {
+        uiScope.launch {
+            deleteCompleted()
+        }
+    }
+
     private suspend fun insert(item: Item) {
         withContext(Dispatchers.IO) {
             itemDatabase.insert(item)
@@ -71,6 +77,12 @@ class ItemListViewModel(
     private suspend fun delete(item: Item) {
         withContext(Dispatchers.IO) {
             itemDatabase.delete(item)
+        }
+    }
+
+    private suspend fun deleteCompleted() {
+        withContext(Dispatchers.IO) {
+            listDatabase.deleteCompleted(itemListID)
         }
     }
 

@@ -2,10 +2,8 @@ package com.example.shoppinglistapp.ui.list
 
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
@@ -40,6 +38,8 @@ class ItemListFragment : Fragment() {
         viewModelFactory = ItemListViewModelFactory(args.itemListID, listDataSource, itemDataSource, application)
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(ItemListViewModel::class.java)
 
+        setHasOptionsMenu(true)
+
         val viewManager = LinearLayoutManager(activity)
         val recyclerAdapter =
             ItemListRecyclerAdapter(viewModel.itemListLiveData.value ?: mutableListOf<Item>(), object : ItemListRecyclerClickListener {
@@ -73,6 +73,18 @@ class ItemListFragment : Fragment() {
 
         // Inflate the layout for this fragment
         return binding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.item_list_action_bar, menu)
+        super.onCreateOptionsMenu(menu, menuInflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_delete_completed -> viewModel.onDeleteCompleted()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onResume() {
