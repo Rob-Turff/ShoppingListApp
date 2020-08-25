@@ -21,11 +21,13 @@ class ViewListsFragment : Fragment() {
     private lateinit var viewModel: ViewListsViewModel
     private lateinit var viewModelFactory: ViewListsViewModelFactory
     private lateinit var binding: FragmentViewListsBinding
+    private lateinit var parentActivity: MainActivity
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        parentActivity = activity as MainActivity
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_view_lists, container, false)
         val application = requireNotNull(this.activity).application
         val listDataSource = ItemsDatabase.getInstance(application).itemListDatabaseDao
@@ -48,6 +50,7 @@ class ViewListsFragment : Fragment() {
         }
 
         viewModel.listsLiveData.observe(viewLifecycleOwner, Observer { newList -> recyclerAdapter.updateData(newList) })
+        parentActivity.showHomeButton(false)
 
         return binding.root
     }

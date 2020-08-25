@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.CheckBox
+import android.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
@@ -27,13 +28,14 @@ class ItemListFragment : Fragment(),
     private lateinit var viewModel: ItemListViewModel
     private lateinit var viewModelFactory: ItemListViewModelFactory
     private lateinit var binding: FragmentItemListBinding
+    private lateinit var parentActivity: MainActivity
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val args = ItemListFragmentArgs.fromBundle(requireArguments())
-
+        parentActivity = activity as MainActivity
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_item_list, container, false)
         val application = requireNotNull(this.activity).application
         val itemDataSource = ItemsDatabase.getInstance(application).itemDatabaseDAO
@@ -42,8 +44,9 @@ class ItemListFragment : Fragment(),
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(ItemListViewModel::class.java)
 
         setHasOptionsMenu(true)
+        parentActivity.showHomeButton(true)
 
-        val viewManager = LinearLayoutManager(activity)
+        val viewManager = LinearLayoutManager(parentActivity)
         val recyclerAdapter =
             ItemListRecyclerAdapter(viewModel.itemListLiveData.value ?: mutableListOf<Item>(), object : ItemListRecyclerClickListener {
                 override fun onViewClicked(view: View, position: Int) {
@@ -71,7 +74,7 @@ class ItemListFragment : Fragment(),
         }
 
         viewModel.itemListLiveData.observe(viewLifecycleOwner, Observer { newItemList -> recyclerAdapter.updateData(newItemList.sortedBy { it.isCompleted }) })
-        viewModel.listInfoLiveData.observe(viewLifecycleOwner, Observer { newListInfo -> activity?.setTitle(newListInfo.listName) })
+        viewModel.listInfoLiveData.observe(viewLifecycleOwner, Observer { newListInfo -> parentActivity.title = newListInfo.listName })
 
         binding.lifecycleOwner = this
 
@@ -101,6 +104,7 @@ class ItemListFragment : Fragment(),
             R.id.menu_delete_completed -> viewModel.onDeleteCompleted()
             R.id.menu_delete_list -> onDeleteListClicked()
             R.id.menu_rename_list -> onRenameListClicked()
+            android.R.id.home -> findNavController().navigateUp()
         }
         return super.onOptionsItemSelected(item)
     }
