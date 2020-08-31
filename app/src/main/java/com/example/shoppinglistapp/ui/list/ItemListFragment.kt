@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.CheckBox
-import android.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
@@ -14,7 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.database.models.Item
-import com.example.shoppinglistapp.database.models.ItemsDatabase
+import com.example.shoppinglistapp.database.ItemsDatabase
 import com.example.shoppinglistapp.databinding.FragmentItemListBinding
 import com.example.shoppinglistapp.ui.list.adapters.ItemListRecyclerAdapter
 import com.example.shoppinglistapp.ui.list.adapters.ItemListRecyclerClickListener
@@ -45,10 +44,11 @@ class ItemListFragment : Fragment(),
 
         setHasOptionsMenu(true)
         parentActivity.showHomeButton(true)
+        parentActivity.changeHomeIcon(false)
 
         val viewManager = LinearLayoutManager(parentActivity)
         val recyclerAdapter =
-            ItemListRecyclerAdapter(viewModel.itemListLiveData.value ?: mutableListOf<Item>(), object : ItemListRecyclerClickListener {
+            ItemListRecyclerAdapter(object : ItemListRecyclerClickListener {
                 override fun onViewClicked(view: View, position: Int) {
                     view.findViewById<CheckBox>(R.id.checkBox).toggle()
                 }
@@ -59,6 +59,12 @@ class ItemListFragment : Fragment(),
 
                 override fun onTextChanged(item: Item, text : String) {
                     viewModel.onItemTextChanged(item, text)
+                }
+
+                override fun onViewLongClicked(item: Item?) {
+                    item?.let {
+                        findNavController().navigate(ItemListFragmentDirections.actionItemListFragmentToSelectItemsFragment(viewModel.itemListId, item.itemID))
+                    }
                 }
             } )
 
@@ -73,8 +79,12 @@ class ItemListFragment : Fragment(),
             Log.i("ItemListFragment", "Add item button clicked!")
         }
 
-        viewModel.itemListLiveData.observe(viewLifecycleOwner, Observer { newItemList -> recyclerAdapter.updateData(newItemList.sortedBy { it.isCompleted }) })
-        viewModel.listInfoLiveData.observe(viewLifecycleOwner, Observer { newListInfo -> parentActivity.title = newListInfo.listName })
+        viewModel.itemListLiveData.observe(viewLifecycleOwner, Observer {
+                newItemList -> recyclerAdapter.submitList(newItemList.sortedBy { it.isCompleted })
+        })
+        viewModel.listInfoLiveData.observe(viewLifecycleOwner, Observer {
+                newListInfo -> parentActivity.title = newListInfo.listName
+        })
 
         binding.lifecycleOwner = this
 
@@ -96,6 +106,7 @@ class ItemListFragment : Fragment(),
 
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.item_list_action_bar, menu)
+        menu.setGroupVisible(R.id.item_list_group, true)
         super.onCreateOptionsMenu(menu, menuInflater)
     }
 

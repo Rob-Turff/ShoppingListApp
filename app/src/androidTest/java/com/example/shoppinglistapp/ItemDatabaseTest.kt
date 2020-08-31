@@ -1,12 +1,10 @@
 package com.example.shoppinglistapp
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.observe
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.shoppinglistapp.database.ItemsDatabase
 import com.example.shoppinglistapp.database.models.*
 import com.jraska.livedata.test
 import org.junit.After

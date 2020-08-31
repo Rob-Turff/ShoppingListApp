@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.databinding.FragmentViewListsBinding
 import com.example.shoppinglistapp.database.models.ItemList
-import com.example.shoppinglistapp.database.models.ItemsDatabase
+import com.example.shoppinglistapp.database.ItemsDatabase
 import com.example.shoppinglistapp.ui.list.adapters.ViewListsRecyclerAdapter
 
 class ViewListsFragment : Fragment() {

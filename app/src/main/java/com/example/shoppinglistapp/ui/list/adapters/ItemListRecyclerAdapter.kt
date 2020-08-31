@@ -9,24 +9,31 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.databinding.ItemListRowBinding
 import com.example.shoppinglistapp.database.models.Item
-import com.example.shoppinglistapp.database.models.ItemList
 
-class ItemListRecyclerAdapter(private var itemList: List<Item>, private val _listener : ItemListRecyclerClickListener) :
-    RecyclerView.Adapter<ItemListRecyclerAdapter.ListHolder>() {
+class ItemListRecyclerAdapter(private val _listener : ItemListRecyclerClickListener) :
+    ListAdapter<Item, ItemListRecyclerAdapter.ViewHolder>(ItemListDiffCallback()) {
 
-    inner class ListHolder(private val binding: ItemListRowBinding, private val listener : ItemListRecyclerClickListener) :
-        RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+    inner class ViewHolder(private val binding: ItemListRowBinding, private val listener : ItemListRecyclerClickListener) :
+        RecyclerView.ViewHolder(binding.root), View.OnClickListener, View.OnLongClickListener {
         init {
             itemView.setOnClickListener(this)
+            itemView.setOnLongClickListener(this)
             binding.checkBox.setOnClickListener { v ->
                 Log.i("ItemListRecyclerView", "Clicked checkbox in view at $adapterPosition")
                 listener.onCheckBoxClicked(v as CheckBox, binding.item!!)
             }
-            binding.itemEditTextView.addTextChangedListener { text: Editable? -> listener.onTextChanged(binding.item!!, text.toString()) }
+            binding.itemEditTextView.addTextChangedListener {
+                    text: Editable? -> val item = binding.item!!
+                    Log.i("ItemListRecyclerAdapter", "Text changed from ${item.itemName} to ${text.toString()}")
+                    if (item.itemName != text.toString())
+                        listener.onTextChanged(item, text.toString())
+            }
         }
 
         fun bind(item: Item) {
@@ -45,10 +52,18 @@ class ItemListRecyclerAdapter(private var itemList: List<Item>, private val _lis
                 listener.onCheckBoxClicked(binding.checkBox, binding.item!!)
             }
         }
+
+        override fun onLongClick(v: View?): Boolean {
+            v?.let {
+                Log.i("ItemListRecyclerView", "Clicked view at $adapterPosition")
+                listener.onViewLongClicked(binding.item)
+            }
+            return true
+        }
     }
 
     // Create new views (invoked by the layout manager)
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = DataBindingUtil.inflate<ItemListRowBinding>(
             inflater,
@@ -56,19 +71,24 @@ class ItemListRecyclerAdapter(private var itemList: List<Item>, private val _lis
             parent,
             false
         )
-        return ListHolder(binding, _listener)
+        return ViewHolder(binding, _listener)
     }
 
     // Replace the contents of a view (invoked by the layout manager)
-    override fun onBindViewHolder(holder: ListHolder, position: Int) {
-        holder.bind(itemList[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = getItem(position)
+        holder.bind(item)
+    }
+}
+
+class ItemListDiffCallback : DiffUtil.ItemCallback<Item>() {
+    override fun areItemsTheSame(oldItem: Item, newItem: Item): Boolean {
+        return oldItem.itemID == newItem.itemID
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = itemList.size
-
-    fun updateData(newItemList: List<Item>) {
-        itemList = newItemList
-        notifyDataSetChanged()
+    override fun areContentsTheSame(oldItem: Item, newItem: Item): Boolean {
+        val bool = (oldItem.itemName == newItem.itemName) and (oldItem.isCompleted == newItem.isCompleted)
+        return bool
     }
+
 }

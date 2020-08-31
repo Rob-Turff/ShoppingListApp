@@ -31,4 +31,12 @@ class MainActivity : AppCompatActivity() {
         toolbar?.setDisplayHomeAsUpEnabled(doShow)
         toolbar?.setDisplayShowHomeEnabled(doShow)
     }
+
+    fun changeHomeIcon(showCross : Boolean) {
+        val toolbar : Toolbar = binding.mainActivityToolbar
+        if (showCross)
+            toolbar.setNavigationIcon(R.drawable.close_icon)
+        else
+            toolbar.setNavigationIcon(R.drawable.back_arrow)
+    }
 }

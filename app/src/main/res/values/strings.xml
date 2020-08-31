@@ -34,7 +34,6 @@
     <string name="add_item_hint">Add new item</string>
     <string name="rename_list">Rename List</string>
     <string name="delete_completed">Delete Completed</string>
-    <string name="delete_selected">Delete Selected</string>
     <string name="delete_list">Delete List</string>
     <string name="share_list">Share</string>
     <string name="cancel">Cancel</string>
@@ -42,4 +41,5 @@
     <string name="confirm">Confirm</string>
     <string name="enter_name">Enter Name</string>
     <string name="app_title">Somekinda List App</string>
+    <string name="delete_selected">Delete Selected</string>
 </resources>

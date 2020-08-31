@@ -1,6 +1,7 @@
 package com.example.shoppinglistapp.database.models
 
 import androidx.room.*
+import java.lang.StringBuilder
 
 @Dao
 interface ItemDatabaseDAO {
@@ -13,4 +14,7 @@ interface ItemDatabaseDAO {
 
     @Update
     fun update(item: Item)
+
+    @Query("UPDATE ITEM_TABLE SET is_completed = :isComplete WHERE itemID = :id")
+    fun updateIsComplete(id : Long, isComplete : Boolean)
 }

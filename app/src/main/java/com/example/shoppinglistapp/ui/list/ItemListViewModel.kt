@@ -8,16 +8,19 @@ import com.example.shoppinglistapp.database.models.*
 import kotlinx.coroutines.*
 
 class ItemListViewModel(
-    private val itemListID: Long,
+    private val _itemListID: Long,
     private val listDatabase: ItemListDatabaseDAO,
     private val itemDatabase: ItemDatabaseDAO,
     application: Application
 ) : AndroidViewModel(application) {
-    private val _listInfoLiveData: LiveData<ItemList> = listDatabase.getListInfo(itemListID)
+    private val _listInfoLiveData: LiveData<ItemList> = listDatabase.getListInfo(_itemListID)
     val listInfoLiveData: LiveData<ItemList>
         get() = _listInfoLiveData
 
-    private val _itemListLiveData: LiveData<List<Item>> = listDatabase.getItems(itemListID)
+    val itemListId: Long
+        get() = _itemListID
+
+    private val _itemListLiveData: LiveData<List<Item>> = listDatabase.getItems(_itemListID)
     val itemListLiveData: LiveData<List<Item>>
         get() = _itemListLiveData
 
@@ -30,7 +33,7 @@ class ItemListViewModel(
 
     fun onAddItem(itemName: String) {
         uiScope.launch {
-            val newItem = Item(itemName, itemListID)
+            val newItem = Item(itemName, _itemListID)
             insert(newItem)
         }
     }
@@ -59,8 +62,7 @@ class ItemListViewModel(
     fun onCompleteItem(item: Item) {
         Log.i("ItemListViewModel", "Flipping completed boolean for ${item.itemName}")
         uiScope.launch {
-            item.isCompleted = !item.isCompleted
-            updateItem(item)
+            updateItemIsComplete(item.itemID, !item.isCompleted)
         }
     }
 
@@ -89,6 +91,12 @@ class ItemListViewModel(
         }
     }
 
+    private suspend fun updateItemIsComplete(id : Long, isComplete : Boolean) {
+        withContext(Dispatchers.IO) {
+            itemDatabase.updateIsComplete(id, isComplete)
+        }
+    }
+
     private suspend fun updateList(itemList: ItemList) {
         withContext(Dispatchers.IO) {
             listDatabase.update(itemList)
@@ -103,13 +111,13 @@ class ItemListViewModel(
 
     private suspend fun deleteList() {
         withContext(Dispatchers.IO) {
-            listDatabase.deleteList(itemListID)
+            listDatabase.deleteList(_itemListID)
         }
     }
 
     private suspend fun deleteCompleted() {
         withContext(Dispatchers.IO) {
-            listDatabase.deleteCompleted(itemListID)
+            listDatabase.deleteCompleted(_itemListID)
         }
     }
 

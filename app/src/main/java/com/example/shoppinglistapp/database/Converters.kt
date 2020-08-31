@@ -1,4 +1,4 @@
-package com.example.shoppinglistapp.database.models
+package com.example.shoppinglistapp.database
 
 import androidx.room.TypeConverter
 import com.google.gson.Gson
