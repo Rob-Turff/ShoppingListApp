@@ -28,7 +28,7 @@ class ItemListRecyclerAdapter(private val _listener : ItemListRecyclerClickListe
                 Log.i("ItemListRecyclerView", "Clicked checkbox in view at $adapterPosition")
                 listener.onCheckBoxClicked(v as CheckBox, binding.item!!)
             }
-            binding.itemEditTextView.addTextChangedListener {
+            binding.itemTextView.addTextChangedListener {
                     text: Editable? -> val item = binding.item!!
                     Log.i("ItemListRecyclerAdapter", "Text changed from ${item.itemName} to ${text.toString()}")
                     if (item.itemName != text.toString())
@@ -38,9 +38,9 @@ class ItemListRecyclerAdapter(private val _listener : ItemListRecyclerClickListe
 
         fun bind(item: Item) {
             if (item.isCompleted) {
-                binding.itemEditTextView.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+                binding.itemTextView.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
             } else {
-                binding.itemEditTextView.paintFlags = 1
+                binding.itemTextView.paintFlags = 1
             }
             binding.item = item
             binding.executePendingBindings()
@@ -49,7 +49,7 @@ class ItemListRecyclerAdapter(private val _listener : ItemListRecyclerClickListe
         override fun onClick(v: View?) {
             if (v != null) {
                 Log.i("ItemListRecyclerView", "Clicked view at $adapterPosition")
-                listener.onCheckBoxClicked(binding.checkBox, binding.item!!)
+                listener.onViewClicked(v, binding.item!!)
             }
         }
 

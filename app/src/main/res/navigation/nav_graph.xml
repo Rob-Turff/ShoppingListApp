@@ -32,10 +32,10 @@
         android:label="fragment_select_items"
         tools:layout="@layout/fragment_select_items" >
         <argument
-            android:name="itemListId"
-            app:argType="long" />
-        <argument
             android:name="itemId"
             app:argType="long" />
+        <argument
+            android:name="itemList"
+            app:argType="com.example.shoppinglistapp.database.models.Item[]" />
     </fragment>
 </navigation>

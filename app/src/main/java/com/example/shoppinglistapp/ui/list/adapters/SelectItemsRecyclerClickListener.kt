@@ -5,6 +5,6 @@ import android.widget.CheckBox
 import com.example.shoppinglistapp.database.models.Item
 
 interface SelectItemsRecyclerClickListener {
-    fun onViewClicked(view : View, position : Int)
-    fun onCheckBoxClicked(checkBox: CheckBox, position : Int)
+    fun onViewClicked(view : View, item : Item)
+    fun onCheckBoxClicked(item : Item)
 }

@@ -10,39 +10,34 @@ import com.example.shoppinglistapp.database.models.ItemListDatabaseDAO
 import kotlinx.coroutines.*
 
 class SelectItemsViewModel(
-    private val itemListId: Long,
     private val itemId: Long,
+    val itemList: List<Item>,
     private val listDatabase: ItemListDatabaseDAO,
     private val itemDatabase: ItemDatabaseDAO,
     application: Application
 ) : AndroidViewModel(application) {
-    private val _itemListLiveData: LiveData<List<Item>> = listDatabase.getItems(itemListId)
-    val itemListLiveData: LiveData<List<Item>>
-        get() = _itemListLiveData
-
-    var pairList = mutableListOf<Pair<Item, Boolean>>()
 
     private var viewModelJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
     init {
         Log.i("SelectItemsViewModel", "Initialised view model with $listDatabase.")
+        for (item in itemList) {
+            if (item.itemID == itemId)
+                item.isSelected = true
+        }
     }
 
-    fun updatedData() {
-        val newPairList = mutableListOf<Pair<Item, Boolean>>()
-        for (item in itemListLiveData.value!!) {
-            newPairList.add(Pair(item, false))
-        }
-        pairList = newPairList
+    fun onSelectItem(item : Item) {
+        item.isSelected = !item.isSelected
     }
 
     fun onDeleteSelected() {
         uiScope.launch {
             val deleteList = mutableListOf<Item>()
-            for (pair in pairList) {
-                if (pair.second)
-                    deleteList.add(pair.first)
+            for (item in itemList) {
+                if (item.isSelected)
+                    deleteList.add(item)
             }
             deleteSelected(deleteList)
         }

@@ -6,7 +6,7 @@ import android.widget.EditText
 import com.example.shoppinglistapp.database.models.Item
 
 interface ItemListRecyclerClickListener {
-    fun onViewClicked(view : View, position : Int)
+    fun onViewClicked(view : View, item : Item)
     fun onCheckBoxClicked(checkBox: CheckBox, item: Item)
     fun onTextChanged(item: Item, text : String)
     fun onViewLongClicked(item: Item?)

@@ -49,8 +49,9 @@ class ItemListFragment : Fragment(),
         val viewManager = LinearLayoutManager(parentActivity)
         val recyclerAdapter =
             ItemListRecyclerAdapter(object : ItemListRecyclerClickListener {
-                override fun onViewClicked(view: View, position: Int) {
+                override fun onViewClicked(view: View, item : Item) {
                     view.findViewById<CheckBox>(R.id.checkBox).toggle()
+                    viewModel.onCompleteItem(item)
                 }
 
                 override fun onCheckBoxClicked(checkBox: CheckBox, item: Item) {
@@ -63,7 +64,7 @@ class ItemListFragment : Fragment(),
 
                 override fun onViewLongClicked(item: Item?) {
                     item?.let {
-                        findNavController().navigate(ItemListFragmentDirections.actionItemListFragmentToSelectItemsFragment(viewModel.itemListId, item.itemID))
+                        findNavController().navigate(ItemListFragmentDirections.actionItemListFragmentToSelectItemsFragment(item.itemID, viewModel.itemListLiveData.value!!.toTypedArray()))
                     }
                 }
             } )

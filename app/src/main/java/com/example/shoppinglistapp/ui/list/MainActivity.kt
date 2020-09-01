@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
+import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.appcompat.app.ActionBar

@@ -7,44 +7,47 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.database.models.Item
 import com.example.shoppinglistapp.databinding.SelectItemRowBinding
 
 
-class SelectItemsRecyclerAdapter(private var itemList: List<Pair<Item, Boolean>>, private val _listener : SelectItemsRecyclerClickListener) :
-    RecyclerView.Adapter<SelectItemsRecyclerAdapter.ListHolder>() {
-    inner class ListHolder(private val binding: SelectItemRowBinding, private val listener : SelectItemsRecyclerClickListener) :
+class SelectItemsRecyclerAdapter(private val _listener : SelectItemsRecyclerClickListener) :
+    ListAdapter<Item, SelectItemsRecyclerAdapter.ViewHolder>(SelectItemDiffCallback()) {
+
+    inner class ViewHolder(private val binding: SelectItemRowBinding, private val listener : SelectItemsRecyclerClickListener) :
         RecyclerView.ViewHolder(binding.root), View.OnClickListener {
         init {
             itemView.setOnClickListener(this)
-            binding.checkBox.setOnClickListener { v ->
+            binding.checkBox.setOnClickListener {
                 Log.i("SelectItemsRecyclerView", "Clicked checkbox in view at $adapterPosition")
-                listener.onCheckBoxClicked(v as CheckBox, adapterPosition)
+                listener.onCheckBoxClicked(binding.item!!)
             }
         }
 
-        fun bind(itemPair: Pair<Item, Boolean>) {
-            if (itemPair.first.isCompleted) {
-                binding.itemEditTextView.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+        fun bind(item: Item) {
+            if (item.isCompleted) {
+                binding.itemTextView.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
             } else {
-                binding.itemEditTextView.paintFlags = 1
+                binding.itemTextView.paintFlags = 1
             }
-            binding.item = itemPair.first
+            binding.item = item
             binding.executePendingBindings()
         }
 
         override fun onClick(v: View?) {
             if (v != null) {
                 Log.i("SelectItemsRecyclerView", "Clicked view at $adapterPosition")
-                listener.onViewClicked(v, adapterPosition)
+                listener.onViewClicked(v, binding.item!!)
             }
         }
     }
 
     // Create new views (invoked by the layout manager)
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = DataBindingUtil.inflate<SelectItemRowBinding>(
             inflater,
@@ -52,19 +55,25 @@ class SelectItemsRecyclerAdapter(private var itemList: List<Pair<Item, Boolean>>
             parent,
             false
         )
-        return ListHolder(binding, _listener)
+        return ViewHolder(binding, _listener)
     }
 
     // Replace the contents of a view (invoked by the layout manager)
-    override fun onBindViewHolder(holder: ListHolder, position: Int) {
-        holder.bind(itemList[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = getItem(position)
+        holder.bind(item)
+    }
+}
+
+class SelectItemDiffCallback : DiffUtil.ItemCallback<Item>() {
+    override fun areItemsTheSame(oldItem: Item, newItem: Item): Boolean {
+        return oldItem.itemID == newItem.itemID
     }
 
-    fun updateData(newItemList: List<Pair<Item, Boolean>>) {
-        itemList = newItemList
-        notifyDataSetChanged()
+    override fun areContentsTheSame(oldItem: Item, newItem: Item): Boolean {
+        val bool = (oldItem.itemName == newItem.itemName) and (oldItem.isCompleted == newItem.isCompleted)
+        if (!bool)
+            newItem.isSelected = oldItem.isSelected
+        return bool
     }
-
-    // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = itemList.size
 }

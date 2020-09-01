@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppinglistapp.R
 import com.example.shoppinglistapp.database.ItemsDatabase
+import com.example.shoppinglistapp.database.models.Item
 import com.example.shoppinglistapp.databinding.FragmentSelectItemsBinding
 import com.example.shoppinglistapp.ui.list.adapters.SelectItemsRecyclerAdapter
 import com.example.shoppinglistapp.ui.list.adapters.SelectItemsRecyclerClickListener
@@ -32,20 +33,21 @@ class SelectItemsFragment : Fragment() {
         val application = requireNotNull(this.activity).application
         val itemDataSource = ItemsDatabase.getInstance(application).itemDatabaseDAO
         val listDataSource = ItemsDatabase.getInstance(application).itemListDatabaseDao
-        viewModelFactory = SelectItemsViewModelFactory(args.itemListId, args.itemId, listDataSource, itemDataSource, application)
+        viewModelFactory = SelectItemsViewModelFactory(args.itemId, args.itemList.asList(), listDataSource, itemDataSource, application)
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(SelectItemsViewModel::class.java)
 
         setHasOptionsMenu(true)
         parentActivity.showHomeButton(true)
         parentActivity.changeHomeIcon(true)
 
-        val recyclerAdapter = SelectItemsRecyclerAdapter(viewModel.pairList, object : SelectItemsRecyclerClickListener {
-            override fun onViewClicked(view: View, position: Int) {
+        val recyclerAdapter = SelectItemsRecyclerAdapter(object : SelectItemsRecyclerClickListener {
+            override fun onViewClicked(view: View, item : Item) {
                 view.findViewById<CheckBox>(R.id.checkBox).toggle()
+                viewModel.onSelectItem(item)
             }
 
-            override fun onCheckBoxClicked(checkBox: CheckBox, position : Int) {
-                viewModel.pairList[position] = Pair(viewModel.pairList[position].first, !viewModel.pairList[position].second)
+            override fun onCheckBoxClicked(item : Item) {
+                viewModel.onSelectItem(item)
             }
 
         })
@@ -60,8 +62,12 @@ class SelectItemsFragment : Fragment() {
             findNavController().navigateUp()
         }
 
+        binding.renameSelectedButton.setOnClickListener {
+
+        }
+
         binding.lifecycleOwner = this
-        viewModel.itemListLiveData.observe(viewLifecycleOwner, Observer { viewModel.updatedData(); recyclerAdapter.updateData(viewModel.pairList) })
+        recyclerAdapter.submitList(viewModel.itemList.sortedBy { it.isCompleted })
 
         // Inflate the layout for this fragment
         return binding.root

@@ -19,6 +19,6 @@
             android:id="@+id/menu_delete_list"
             android:icon="@drawable/delete_icon"
             android:title="@string/delete_list"
-            app:showAsAction="ifRoom" />
+            app:showAsAction="never" />
     </group>
 </menu>

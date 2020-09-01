@@ -26,16 +26,15 @@
             <CheckBox
                 android:id="@+id/checkBox"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:checked="@{item.selected}"/>
 
-            <EditText
-                android:id="@+id/itemEditTextView"
+            <TextView
+                android:id="@+id/itemTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:background="@android:color/transparent"
-                android:clickable="false"
-                android:editable="false"
                 android:text="@{item.itemName}" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
