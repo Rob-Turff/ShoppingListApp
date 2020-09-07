@@ -34,6 +34,7 @@ class SelectItemsRecyclerAdapter(private val _listener : SelectItemsRecyclerClic
             } else {
                 binding.itemTextView.paintFlags = 1
             }
+            item.forceUpdate = false
             binding.item = item
             binding.executePendingBindings()
         }
@@ -74,6 +75,8 @@ class SelectItemDiffCallback : DiffUtil.ItemCallback<Item>() {
         val bool = (oldItem.itemName == newItem.itemName) and (oldItem.isCompleted == newItem.isCompleted)
         if (!bool)
             newItem.isSelected = oldItem.isSelected
+        if (bool and newItem.forceUpdate)
+            return false
         return bool
     }
 }

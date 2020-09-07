@@ -29,4 +29,7 @@ data class Item(
 
     @Ignore
     var isSelected : Boolean = false
+
+    @Ignore
+    var forceUpdate : Boolean = false
 }

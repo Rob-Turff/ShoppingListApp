@@ -5,7 +5,7 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.CheckBox
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,13 +15,15 @@ import com.example.shoppinglistapp.database.models.Item
 import com.example.shoppinglistapp.databinding.FragmentSelectItemsBinding
 import com.example.shoppinglistapp.ui.list.adapters.SelectItemsRecyclerAdapter
 import com.example.shoppinglistapp.ui.list.adapters.SelectItemsRecyclerClickListener
+import com.example.shoppinglistapp.ui.list.dialogboxes.EditItemDialogFragment
 
-class SelectItemsFragment : Fragment() {
+class SelectItemsFragment : Fragment(), EditItemDialogFragment.EditItemDialogListener {
 
     private lateinit var viewModel: SelectItemsViewModel
     private lateinit var viewModelFactory: SelectItemsViewModelFactory
     private lateinit var binding: FragmentSelectItemsBinding
     private lateinit var parentActivity: MainActivity
+    private lateinit var recyclerAdapter: SelectItemsRecyclerAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,14 +42,16 @@ class SelectItemsFragment : Fragment() {
         parentActivity.showHomeButton(true)
         parentActivity.changeHomeIcon(true)
 
-        val recyclerAdapter = SelectItemsRecyclerAdapter(object : SelectItemsRecyclerClickListener {
+        recyclerAdapter = SelectItemsRecyclerAdapter(object : SelectItemsRecyclerClickListener {
             override fun onViewClicked(view: View, item : Item) {
                 view.findViewById<CheckBox>(R.id.checkBox).toggle()
                 viewModel.onSelectItem(item)
+                setButtonVisibility()
             }
 
             override fun onCheckBoxClicked(item : Item) {
                 viewModel.onSelectItem(item)
+                setButtonVisibility()
             }
 
         })
@@ -63,7 +67,15 @@ class SelectItemsFragment : Fragment() {
         }
 
         binding.renameSelectedButton.setOnClickListener {
+            val dialogFragment = EditItemDialogFragment()
 
+            val args = Bundle()
+            val item = viewModel.getSelectedItems().first()!!
+            args.putParcelable("item", item)
+
+            dialogFragment.arguments = args
+            dialogFragment.setTargetFragment(this, 0)
+            dialogFragment.show(parentFragmentManager, "edit_item_dialog")
         }
 
         binding.lifecycleOwner = this
@@ -71,6 +83,12 @@ class SelectItemsFragment : Fragment() {
 
         // Inflate the layout for this fragment
         return binding.root
+    }
+
+    fun setButtonVisibility() {
+        val list = viewModel.getSelectedItems()
+        binding.renameSelectedButton.isEnabled = (list.size == 1)
+        binding.deleteSelectedButton.isEnabled = (list.isNotEmpty())
     }
 
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -89,5 +107,10 @@ class SelectItemsFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance() = SelectItemsFragment()
+    }
+
+    override fun onEditDialogPositiveClick(dialog: DialogFragment, text: String, item : Item) {
+        viewModel.onUpdateItemName(text, item)
+        recyclerAdapter.submitList(viewModel.itemList.sortedBy { it.isCompleted })
     }
 }

@@ -15,6 +15,9 @@ interface ItemDatabaseDAO {
     @Update
     fun update(item: Item)
 
+    @Query("UPDATE ITEM_TABLE SET item_name = :name WHERE itemID = :id")
+    fun updateItemName(id : Long, name : String)
+
     @Query("UPDATE ITEM_TABLE SET is_completed = :isComplete WHERE itemID = :id")
     fun updateIsComplete(id : Long, isComplete : Boolean)
 }

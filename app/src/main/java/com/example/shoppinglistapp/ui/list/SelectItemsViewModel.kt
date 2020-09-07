@@ -32,6 +32,25 @@ class SelectItemsViewModel(
         item.isSelected = !item.isSelected
     }
 
+    fun getSelectedItems() : List<Item> {
+        val selectedList = mutableListOf<Item>()
+        for (item in itemList) {
+            if (item.isSelected)
+                selectedList.add(item)
+        }
+        return selectedList
+    }
+
+    fun onUpdateItemName(newName : String, item : Item) {
+        for (item in itemList)
+            if (item.itemID == item.itemID)
+                item.itemName = newName
+        item.forceUpdate = true
+        uiScope.launch {
+            updateItemName(item.itemID, newName)
+        }
+    }
+
     fun onDeleteSelected() {
         uiScope.launch {
             val deleteList = mutableListOf<Item>()
@@ -40,6 +59,12 @@ class SelectItemsViewModel(
                     deleteList.add(item)
             }
             deleteSelected(deleteList)
+        }
+    }
+
+    private suspend fun updateItemName(id : Long, name : String) {
+        withContext(Dispatchers.IO) {
+            itemDatabase.updateItemName(id, name)
         }
     }
 
